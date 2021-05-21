@@ -9,9 +9,11 @@ XPATH_LINK_TO_PAGINA = '//ul[@id="mw-whatlinkshere-list"]/li//a/@href'
 XPATH_LINK_TO_TITULO = '//h1[@id="section_0"]/text()'
 XPATH_LINK_TO_DEFINICION = '//div[@class="mw-parser-output"]//p//text()'
 
+
+
 def parse_home():
       
-    fd = os.open('predataset.txt', os.O_RDWR)
+    fd = os.open('wiki3.txt', os.O_RDWR)
 
     links_to_pagina = {}
     
@@ -19,16 +21,20 @@ def parse_home():
     for pagina in links_to_pagina:
         
         print('https://es.m.wikipedia.org/'+pagina)
-        
+        break
 
         response = requests.get('https://es.m.wikipedia.org/'+pagina)
         home = response.content.decode('utf-8')
         parsed = html.fromstring(home)
 
-
+        
         links_to_titulo = parsed.xpath(XPATH_LINK_TO_TITULO)[0]
         links_to_definicion = parsed.xpath(XPATH_LINK_TO_DEFINICION)
+        
+        #print(len(links_to_definicion))
 
+        
+        
 
         linedef = str.encode('" -wiki- ') 
         numBytes = os.write(fd,linedef)#

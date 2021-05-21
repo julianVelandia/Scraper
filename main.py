@@ -8,8 +8,12 @@ import re
 from requests.exceptions import HTTPError, ConnectionError
 from urllib3.exceptions import MaxRetryError
 
-import news_page_objects as news
-from common import config
+import objects as news
+from configuration import config
+
+"""
+
+"""
 
 
 #logger = logging.getLogger(__name__)
@@ -29,7 +33,6 @@ def _news_scraper(news_site_uid):
 
         if article:
             #logger.info('Article fetched!!')
-            print('Article fetched!!')
             articles.append(article)
 
     _save_articles(news_site_uid, articles)
@@ -52,17 +55,17 @@ def _save_articles(news_site_uid, articles):
 
 
 def _fetch_article(news_site_uid, host, link):
-    logger.info('Start fetching article at {}'.format(link))
+    #logger.info('Start fetching article at {}'.format(link))
 
     article = None
     try:
         article = news.ArticlePage(news_site_uid, _build_link(host, link))
     except (HTTPError, ConnectionError, MaxRetryError) as e:
-        logger.warning('Error while fechting the article', exc_info=False)
+        #logger.warning('Error while fechting the article', exc_info=False)
 
 
     if article and not article.body:
-        logger.warning('Invalid article. There is no body')
+        #logger.warning('Invalid article. There is no body')
         return None
 
     return article
@@ -80,10 +83,11 @@ def _build_link(host, link):
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
 
-    chosen_web = list(config()['news_sites'].keys())
+    news_site_choices = list(config()['news_sites'].keys())
     parser.add_argument('news_site',
+                        help='The news site that you want to scrape',
                         type=str,
-                        choices=chosen_web)
+                        choices=news_site_choices)
 
     args = parser.parse_args()
     _news_scraper(args.news_site)
